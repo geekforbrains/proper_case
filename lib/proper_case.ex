@@ -30,11 +30,18 @@ defmodule ProperCase do
 
   @doc """
   Converts all the keys in a map to `snake_case`
+  If the map is a struct with no `Enumerable` implementation,
+  the struct is considered to be a single value.
   """
   def to_snake_case(map) when is_map(map) do
-    for {key, val} <- map,
-      into: %{},
-      do: {snake_case(key), to_snake_case(val)}
+    try do
+      for {key, val} <- map,
+        into: %{},
+        do: {snake_case(key), to_snake_case(val)}
+    rescue
+      # Not Enumerable
+      Protocol.UndefinedError -> map
+    end
   end
 
   def to_snake_case(list) when is_list(list) do

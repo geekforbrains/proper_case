@@ -46,6 +46,14 @@ defmodule ProperCaseTest do
     assert ProperCase.camel_case(:no_i_am_your_father) === "noIAmYourFather"
   end
 
+  test ".to_snake_case treats non-Enumerable structs as plain values" do
+    epoch = Ecto.DateTime.from_unix!(0, :microseconds)
+    incoming = %{ "unixEpoch" => epoch }
+    expected = %{ "unix_epoch" => epoch }
+
+    assert ProperCase.to_snake_case(incoming) === expected
+  end
+
   test ".to_snake_case converts map keys to `snake_case`" do
     expected_params = %{
       "user" => %{
